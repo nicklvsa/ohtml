@@ -19,19 +19,6 @@ var FunctionPool = {
     }
 }
 
-var getElemAttrs = (elem) => {
-    return [].slice.call(elem.attributes).map((attr) => {
-        return {
-            name: attr.name,
-            value: attr.value
-        }
-    });
-}
-
-var makeSafe = (unsafeStr) => {
-    return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
-}
-
 var log = (severity, obj) => {
     switch(severity) {
         case 0:
@@ -49,6 +36,20 @@ var log = (severity, obj) => {
         default:
             break;
     }
+}
+
+
+let getElemAttrs = (elem) => {
+    return [].slice.call(elem.attributes).map((attr) => {
+        return {
+            name: attr.name,
+            value: attr.value
+        }
+    });
+}
+
+let makeSafe = (unsafeStr) => {
+    return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
 }
 
 
@@ -179,8 +180,7 @@ document.querySelectorAll('switch').forEach((obj) => {
     }
 });
 
-
-
+//Register function tags
 document.querySelectorAll("function").forEach((obj) => {
     let name = obj.getAttribute("name");
     let args = obj.getAttribute("args");
@@ -195,7 +195,6 @@ document.querySelectorAll("function").forEach((obj) => {
                     } else {
                         FUNC_POOL[name] = new Function(args, js);
                     }
-                    //log(0, FUNC_POOL[name]);
                 }   
             });
         }
