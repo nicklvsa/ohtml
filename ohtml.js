@@ -57,16 +57,17 @@ document.querySelectorAll('defs').forEach((obj) => {
 //Register for each tags
 document.querySelectorAll('foreach').forEach((obj) => {
     let iterator = obj.getAttribute("iterator");
+    let type = obj.getAttribute("type");
     let idx = obj.getAttribute("index");
     let def = obj.getAttribute("as");
-    if(iterator != "" && def != "") {
+    if(iterator != "" && def != "" && type != "") {
         if(iterator in window && typeof eval(iterator) !== "undefined") {
             for(iter of eval(iterator)) {
                 log(0, iter);
                 document.querySelectorAll('sym').forEach((sym) => {
                     let attrs = getElemAttrs(sym);
                     if(attrs[0].name == def) {
-                        let symDiv = document.createElement('div');
+                        let symDiv = document.createElement(type);
                         symDiv.className = def;
                         symDiv.id = iter;
                         symDiv.innerHTML = iter;
