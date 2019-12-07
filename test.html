@@ -6,8 +6,12 @@
     </head>
     <body>
 
+        <!-- Testing defs tags -->
+
         <defs set="test" value="123"></defs>
         <defs get="test"></defs>
+
+        <!-- Testing foreach tags -->
 
        <div>
             <foreach type="div" iterator="pies" as="pie">
@@ -21,14 +25,13 @@
             </foreach>
         </div>
 
+        <!-- Testing if tags -->
+
         <div>
-            <if query="false">
+            <if query="testing()">
 
                 <p>if is run</p>
 
-                <div>
-                    <p>some other stuff</p>
-                </div>
 
                 <else>
 
@@ -37,6 +40,30 @@
                 </else>
 
             </if>
+        </div>
+
+        <!-- Testing switch tags -->
+
+        <div>
+            <switch on="somevalue">
+
+                <case value0>
+                    <p>value0</p>
+                </case>
+
+                <case testing>
+                    <p>testing</p>
+                </case>
+
+                <case value2>
+                    <p>value2</p>
+                </case>
+
+                <default>
+                    <p>no values eq to on value</p>
+                </default>
+
+            </switch>
         </div>
 
     </body>

@@ -97,10 +97,10 @@ document.querySelectorAll('foreach').forEach((obj) => {
     if(idx != null && idx != "" && typeof idx !== "undefined") {
         log(2, "Index property not needed! Index used: " + idx)
     }
-
-
 });
 
+//Register if/else statements
+//TODO: Implement elseif tags
 document.querySelectorAll('if').forEach((obj) => {
     document.querySelectorAll('else').forEach((elseStmt) => elseStmt.setAttribute("style", "display:none;"));
     let query = obj.getAttribute("query");
@@ -125,6 +125,33 @@ document.querySelectorAll('if').forEach((obj) => {
             });
         }
     }
+});
 
 
+document.querySelectorAll('switch').forEach((obj) => {
+    let hasCase = false;
+    let on = obj.getAttribute('on');
+    if(on != "") {
+        on = makeSafe(on.replace(" ", ""));
+        if(obj.hasChildNodes()) {
+            obj.childNodes.forEach((node) => {
+                if(node.nodeName.toLowerCase() == "case" || node.nodeName.toLowerCase() == "default") {
+                    node.style = "display:none;";
+                    for(attr of node.attributes) {
+                        if(eval(on) == attr.nodeName) {
+                            node.style = "display:;";
+                            hasCase = true;
+                        }   
+                    }
+                } else {
+                    node.style = "display:none;";
+                }
+                if(node.nodeName.toLowerCase() == "default" && !hasCase) {
+                    node.style = "display:;";
+                } 
+            });
+        } else {
+            log(2, "Switch tag does not contain any children!");
+        }
+    }
 });
