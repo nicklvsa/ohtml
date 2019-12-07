@@ -92,7 +92,7 @@ document.querySelectorAll('foreach').forEach((obj) => {
         if(iterator in window && typeof eval(iterator) !== "undefined") {
             for(iter of eval(iterator)) {
                 log(0, iter);
-                document.querySelectorAll('sym').forEach((sym) => {
+                document.querySelectorAll('each').forEach((sym) => {
                     let attrs = getElemAttrs(sym);
                     if(attrs[0].name == def) {
                         if(type != "script" && !type.includes("script") && !type.includes("applet") && !type.includes("embed")) {
