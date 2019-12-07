@@ -1,4 +1,8 @@
 //Helper functions
+if(true) { /* Used to set the scope of oHTML */
+
+let FUNC_POOL = {};
+let LOCAL_POOL = {};
 
 var StoragePool = {
     add: (set, val) => {
@@ -6,6 +10,12 @@ var StoragePool = {
     },
     get: (val) => {
         return localStorage.getItem("OHTML_POOL_VAR:"+val);
+    }
+}
+
+var FunctionPool = {
+    exec: (name, ...args) => {
+        return FUNC_POOL[name].apply(this, args);
     }
 }
 
@@ -46,15 +56,28 @@ var log = (severity, obj) => {
 document.querySelectorAll('defs').forEach((obj) => {
     let get = obj.getAttribute("get");
     let set = obj.getAttribute("set");
+    let type = obj.getAttribute("scope");
     let value = obj.getAttribute("value");
-    if(get != null && (set == null || value == null)) {
+    if(get != null && type != null && (set == null || value == null)) {
         let getter = document.createElement('div');
-        getter.innerHTML = StoragePool.get(get);
+        if(type == "global") {
+            getter.innerHTML = StoragePool.get(get);
+        }
+        if(type == "local") {
+            getter.innerHTML = LOCAL_POOL[get];
+        }
         obj.appendChild(getter);
     }
 
-    if(get == null && (set != null && value != null)) {
-        StoragePool.add(set, value);
+    if(get == null && (set != null && value != null && type != null)) {
+        if(type == "global") {
+            StoragePool.add(set, value);
+        } else if(type == "local") {
+            LOCAL_POOL[set] = value;
+        } else {
+            //default decl global var
+            StoragePool.add(set, value);
+        }
     }
 });
 
@@ -127,7 +150,7 @@ document.querySelectorAll('if').forEach((obj) => {
     }
 });
 
-
+//Register switch/case tags
 document.querySelectorAll('switch').forEach((obj) => {
     let hasCase = false;
     let on = obj.getAttribute('on');
@@ -155,3 +178,29 @@ document.querySelectorAll('switch').forEach((obj) => {
         }
     }
 });
+
+
+
+document.querySelectorAll("function").forEach((obj) => {
+    let name = obj.getAttribute("name");
+    let args = obj.getAttribute("args");
+    if(name != "") {
+        if(obj.hasChildNodes()) {
+            obj.childNodes.forEach((node) => {
+                node.style = "display:none;";
+                if(node.nodeName.toLowerCase() == "raw") {
+                    let js = node.innerHTML;
+                    if(args == "" || args == null) {
+                        FUNC_POOL[name] = new Function("", js);
+                    } else {
+                        FUNC_POOL[name] = new Function(args, js);
+                    }
+                    //log(0, FUNC_POOL[name]);
+                }   
+            });
+        }
+    }
+});
+
+
+} /* End scope decl of oHTML */

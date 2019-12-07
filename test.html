@@ -8,8 +8,8 @@
 
         <!-- Testing defs tags -->
 
-        <defs set="test" value="123"></defs>
-        <defs get="test"></defs>
+        <defs scope="local" set="test" value="123"></defs>
+        <defs scope="local" get="test"></defs>
 
         <!-- Testing foreach tags -->
 
@@ -64,6 +64,40 @@
                 </default>
 
             </switch>
+        </div>
+
+
+        <div>
+            <switch on="someothervalue">
+    
+                <case cool>
+                    <p>cool</p>
+                </case>
+    
+                <case testing>
+                    <p>testing</p>
+                </case>
+    
+                <case value2>
+                    <p>value2</p>
+                </case>
+    
+                <default>
+                    <p>no values eq to on value</p>
+                </default>
+    
+            </switch>
+        </div>
+
+        <div>
+
+            <function name="myFunction" args="name, age">
+                <raw>
+                    let p = "this is a test anonymouse function";
+                    console.log(name, age);
+                </raw>
+            </function>
+
         </div>
 
     </body>

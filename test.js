@@ -2,6 +2,7 @@ var drinks = ['coke', 'water', 'sprite', 'dew'];
 var pies = ['chocolate', 'banana', 'pumpkin', 'lemon'];
 
 var somevalue = "testing";
+var someothervalue = "cool";
 
 function testing() {
     return false;
@@ -9,5 +10,9 @@ function testing() {
 
 //Must use onload wrapper to retreive any needed ohtml defs
 window.onload = () => {
+
+    let result = FunctionPool.exec("myFunction", "nick", 17);
+
+    //console.log(StoragePool.get("test"));
     //alert(StoragePool.get("test"));
 }
