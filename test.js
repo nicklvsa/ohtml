@@ -3,5 +3,5 @@ var pies = ['chocolate', 'banana', 'pumpkin', 'lemon'];
 
 //Must use onload wrapper to retreive any needed ohtml defs
 window.onload = () => {
-    alert(StoragePool.get("test"));
+    //alert(StoragePool.get("test"));
 }

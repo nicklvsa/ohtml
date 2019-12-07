@@ -18,6 +18,10 @@ var getElemAttrs = (elem) => {
     });
 }
 
+var makeSafe = (unsafeStr) => {
+    return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
+}
+
 var log = (severity, obj) => {
     switch(severity) {
         case 0:
@@ -92,6 +96,34 @@ document.querySelectorAll('foreach').forEach((obj) => {
 
     if(idx != null && idx != "" && typeof idx !== "undefined") {
         log(2, "Index property not needed! Index used: " + idx)
+    }
+
+
+});
+
+document.querySelectorAll('if').forEach((obj) => {
+    document.querySelectorAll('else').forEach((elseStmt) => elseStmt.setAttribute("style", "display:none;"));
+    let query = obj.getAttribute("query");
+    if(query != "") {
+        query = makeSafe(query.replace(" ", ""));
+        if(eval(query) !== false) {
+            console.log("Query is true: " + query)
+        } else {
+            obj.childNodes.forEach((ifChilds) => {
+                if(ifChilds.nodeName.toLowerCase() !== "else") {
+                   ifChilds.style = "display:none;";
+                } else {
+                    ifChilds.style = "display:;";
+                }
+            });
+            document.querySelectorAll('else').forEach((elseObj) => {
+                if(elseObj.parentElement.tagName == obj.tagName) {
+                    elseObj.setAttribute("style", "display:;");
+                } else {
+                    log(2, "Else tag must be used within an if tag!");
+                }
+            });
+        }
     }
 
 
