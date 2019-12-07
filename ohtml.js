@@ -71,7 +71,7 @@ document.querySelectorAll('foreach').forEach((obj) => {
                             let symDiv = document.createElement(type);
                             symDiv.className = def;
                             symDiv.id = iter;
-                            symDiv.innerHTML = iter;
+                            symDiv.innerHTML = document.createTextNode(iter).data;
                             if(sym.parentElement.tagName.toLowerCase() == obj.tagName.toLowerCase()) {
                                 sym.appendChild(symDiv);
                             } else {
