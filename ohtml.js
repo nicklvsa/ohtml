@@ -67,14 +67,18 @@ document.querySelectorAll('foreach').forEach((obj) => {
                 document.querySelectorAll('sym').forEach((sym) => {
                     let attrs = getElemAttrs(sym);
                     if(attrs[0].name == def) {
-                        let symDiv = document.createElement(type);
-                        symDiv.className = def;
-                        symDiv.id = iter;
-                        symDiv.innerHTML = iter;
-                        if(sym.parentElement.tagName.toLowerCase() == obj.tagName.toLowerCase()) {
-                            sym.appendChild(symDiv);
+                        if(type != "script" && !type.includes("script") && !type.includes("applet") && !type.includes("embed")) {
+                            let symDiv = document.createElement(type);
+                            symDiv.className = def;
+                            symDiv.id = iter;
+                            symDiv.innerHTML = iter;
+                            if(sym.parentElement.tagName.toLowerCase() == obj.tagName.toLowerCase()) {
+                                sym.appendChild(symDiv);
+                            } else {
+                                log(2, "Symbolic object tags must only be used in a foreach loop!");
+                            }
                         } else {
-                            log(2, "Symbolic object tags must only be used in a foreach loop!");
+                            log(2, "You cannot use script tags as an sym output type!");
                         }
                     }
                 });
@@ -86,7 +90,7 @@ document.querySelectorAll('foreach').forEach((obj) => {
         log(2, "Error registering for-each with iterator " + iterator + "!")
     }
 
-    if(idx != null || idx != "" || typeof idx !== "undefined") {
+    if(idx != null && idx != "" && typeof idx !== "undefined") {
         log(2, "Index property not needed! Index used: " + idx)
     }
 
