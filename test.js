@@ -12,6 +12,7 @@ function testing() {
 window.onload = () => {
 
     let result = FunctionPool.exec("myFunction", "nick", 17);
+    let other = FunctionPool.exec("otherFunction", "repeat this message");
 
     //console.log(StoragePool.get("test"));
     //alert(StoragePool.get("test"));

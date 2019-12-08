@@ -52,6 +52,23 @@ let makeSafe = (unsafeStr) => {
     return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
 }
 
+let unescapeEntities = (input) => {
+    let entities = [
+        ['amp', '&'],
+        ['apos', '\''],
+        ['#x27', '\''],
+        ['#x2F', '/'],
+        ['#39', '\''],
+        ['#47', '/'],
+        ['lt', '<'],
+        ['gt', '>'],
+        ['nbsp', ' '],
+        ['quot', '"']
+    ];
+    for (var i = 0, max = entities.length; i < max; ++i) input = input.replace(new RegExp('&'+entities[i][0]+';', 'g'), entities[i][1]);
+    return input;
+}
+
 
 //Register defs tags
 document.querySelectorAll('defs').forEach((obj) => {
@@ -189,7 +206,7 @@ document.querySelectorAll("function").forEach((obj) => {
             obj.childNodes.forEach((node) => {
                 node.style = "display:none;";
                 if(node.nodeName.toLowerCase() == "raw") {
-                    let js = node.innerHTML;
+                    let js = unescapeEntities(node.innerHTML);
                     if(args == "" || args == null) {
                         FUNC_POOL[name] = new Function("", js);
                     } else {
