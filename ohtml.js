@@ -3,6 +3,7 @@ if(true) { /* Used to set the scope of oHTML */
 
 let FUNC_POOL = {};
 let LOCAL_POOL = {};
+let OPTIONS = {};
 
 var StoragePool = {
     add: (set, val) => {
@@ -14,8 +15,19 @@ var StoragePool = {
 }
 
 var FunctionPool = {
-    exec: (name, ...args) => {
+    run: (name, ...args) => {
         return FUNC_POOL[name].apply(this, args);
+    }
+}
+
+//TODO: Implement usage
+var OptionSet = {
+    add: (optionsList) => {
+        for(const [setting, value] of Object.entries(optionsList)) {
+            if(setting != null && value != null) {
+                OPTIONS[setting] = value;
+            }
+        }
     }
 }
 
