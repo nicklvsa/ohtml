@@ -217,8 +217,11 @@ document.querySelectorAll("function").forEach((obj) => {
         if(obj.hasChildNodes()) {
             obj.childNodes.forEach((node) => {
                 node.style = "display:none;";
-                if(node.nodeName.toLowerCase() == "raw") {
-                    let js = unescapeEntities(node.innerHTML);
+                if(node.nodeName.toLowerCase() == "script" && "ohtml" in node.attributes) {
+                    let js = "try{";
+                    js += unescapeEntities(node.innerHTML);
+                    js += "}catch(except){}";
+                    node.innerHTML = js;
                     if(args == "" || args == null) {
                         FUNC_POOL[name] = new Function("", js);
                     } else {

@@ -89,24 +89,23 @@
             </switch>
         </div>
 
-        <!-- Testing function tags -->
+        <!-- Testing function tags (WIP) -->
 
         <div>
             <function name="myFunction" args="name, age">
-                <raw>
+                <script nomodule ohtml>
                     let p = "this is a test anonymous function:";
                     console.log(p + " " + name + " " + age);
-                </raw>
+                </script>
             </function>
 
             <function name="otherFunction" args="message">
-                <raw>
+                <script nomodule ohtml>
                     for(let i = 0; i < 7; i++) {
                         console.log(message);
                     }
-                </raw>
+                </script>
             </function>
         </div>
-
     </body>
 </html>
