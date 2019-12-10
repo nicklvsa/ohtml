@@ -20,7 +20,7 @@
        </div>
 
         <div>
-            <foreach type="span" iterator="drinks" as="drink">
+            <foreach type="div" iterator="drinks" as="drink">
                 <each drink/>
             </foreach>
         </div>
@@ -31,7 +31,6 @@
             <if query="testing()">
 
                 <p>if is run</p>
-
 
                 <else>
 
@@ -66,6 +65,44 @@
             </switch>
         </div>
 
+        <div>
+
+            <!-- WIP (not yet implemented) -->
+            <!-- This implementation will affect the element with the #someid identifier -->
+            <selector select="#someid" method="extend">
+                
+                    <display flex/>
+                
+                    <flex-direct row/>
+    
+                    <size>
+                        <height 100vh override/>
+                        <width 100vw/>
+                    </size>
+    
+                    <fonts>
+                        <typography font="[FONT_STRING_HERE]" weight="bold"/>
+                        <size 25px override>
+                        <color white/>
+                    </fonts>
+
+            </selector>
+
+            <!-- WIP (not yet implemented) -->
+            <!-- This implementation will affect the parent element when referring to self(h3 will be affected) -->
+            <h3>
+
+                <selector select="self" method="override">
+
+                    <fonts>
+
+                    </fonts>
+
+                </selector>
+
+            </h3>
+
+        </div>
 
         <div>
             <switch on="someothervalue">

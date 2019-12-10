@@ -233,5 +233,27 @@ document.querySelectorAll("function").forEach((obj) => {
     }
 });
 
+document.querySelectorAll('selector').forEach((obj) => {
+    let select = obj.getAttribute("select");
+    let method = obj.getAttribute("method");
+    if(method != "" && select != "") {
+        switch(method) {
+            case "override":
+                
+
+
+                break;
+            case "extend":
+
+            
+
+                break;
+            default:
+                log(2, "Invalid use of method type! Supported selector methods: override, extend");
+                break;
+        }
+    }
+});
+
 
 } /* End scope decl of oHTML */
