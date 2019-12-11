@@ -239,14 +239,11 @@ document.querySelectorAll('selector').forEach((obj) => {
     if(method != "" && select != "") {
         switch(method) {
             case "override":
-                
-
-
+                    //add !important attribute to every css property parsed
+                    
                 break;
             case "extend":
-
-            
-
+                    //continue with normal css parsing
                 break;
             default:
                 log(2, "Invalid use of method type! Supported selector methods: override, extend");
