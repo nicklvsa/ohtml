@@ -6,6 +6,8 @@
     </head>
     <body>
 
+        <p id="someid">testing text</p>
+
         <!-- Testing defs tags -->
 
         <defs scope="local" set="test" value="123"></defs>
@@ -70,19 +72,16 @@
             <!-- WIP (not yet implemented) -->
             <!-- This implementation will affect the element with the #someid identifier -->
             <selector select="#someid" method="extend">
-                
+
                     <display is="flex"></display>
-                
-                    <flex-direct is="row"></flex-direct>
-    
+                    <flex-direction is="row"></flex-direction>
 
-                    <height is="100vh" override></height>
-                    <width is="100vw"></size>
+                    <height is="50vh" override></height>
+                    <width is="50vw"></width>
+                    <!--<typography font="[FONT_STRING_HERE]" weight="bold"></typography>!-->
 
-                    <typography font="[FONT_STRING_HERE]" weight="bold"></typography>
-                    <size is="25px" override></size>
-                    <color is="white"/></fonts>
-
+                    <font-size is="25px" override></font-size>
+                    <color is="blue"></color>
             </selector>
 
             <!-- WIP (not yet implemented) -->

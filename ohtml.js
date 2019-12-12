@@ -64,6 +64,20 @@ let isValidCSS = (prop) => {
     return (prop in document.body.style);
 }
 
+let hasClass = (name) => {
+    return document.body.className.match(name);
+}
+
+let hasID = (id) => {
+    let elem;
+    if(!id.startsWith("#")) {
+        elem = document.getElementById(id);
+    } else {
+        elem = 'undefined';
+    }
+    return (typeof(elem) != 'undefined' && elem != null);
+}
+
 let makeSafe = (unsafeStr) => {
     return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
 }
@@ -247,14 +261,34 @@ document.querySelectorAll('selector').forEach((obj) => {
                 obj.childNodes.forEach((child) => {
                     if(isValidCSS(child.nodeName.toLowerCase())) {
                         parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
-                    } else {
-                        console.log("error: not valid css - " + child.nodeName.toLowerCase());
                     }
                 });
             } else {
-                
                 //specific id or class was set, not self
-    
+                let selectorType = select.charAt(0);
+                if(selectorType == "#") {
+                    if(hasID(select)) {
+                        let parent = document.querySelector(select);
+                        obj.childNodes.forEach((child) => {
+                            if(isValidCSS(child.nodeName.toLowerCase())) {
+                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                            }
+                        });
+                    }
+                } else if(selectorType == ".") {
+                    if(hasClass(select)) {
+                        let parent = document.querySelector(select);
+                        obj.childNodes.forEach((child) => {
+                            if(isValidCSS(child.nodeName.toLowerCase())) {
+                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                            }
+                        });
+                    } else {
+                        console.log("does not have class");
+                    }
+                } else {
+                    console.log("Error - selector type invalid: " + select);
+                }
             }   
         }        
     }
