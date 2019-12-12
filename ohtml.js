@@ -60,6 +60,10 @@ let getElemAttrs = (elem) => {
     });
 }
 
+let isValidCSS = (prop) => {
+    return (prop in document.body.style);
+}
+
 let makeSafe = (unsafeStr) => {
     return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
 }
@@ -237,18 +241,22 @@ document.querySelectorAll('selector').forEach((obj) => {
     let select = obj.getAttribute("select");
     let method = obj.getAttribute("method");
     if(method != "" && select != "") {
-        switch(method) {
-            case "override":
-                    //add !important attribute to every css property parsed
-                    
-                break;
-            case "extend":
-                    //continue with normal css parsing
-                break;
-            default:
-                log(2, "Invalid use of method type! Supported selector methods: override, extend");
-                break;
-        }
+        if(obj.hasChildNodes()) {
+            if(select.toLowerCase() == "self") {
+                let parent = obj.parentNode;
+                obj.childNodes.forEach((child) => {
+                    if(isValidCSS(child.nodeName.toLowerCase())) {
+                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                    } else {
+                        console.log("error: not valid css - " + child.nodeName.toLowerCase());
+                    }
+                });
+            } else {
+                
+                //specific id or class was set, not self
+    
+            }   
+        }        
     }
 });
 

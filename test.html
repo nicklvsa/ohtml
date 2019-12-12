@@ -71,20 +71,17 @@
             <!-- This implementation will affect the element with the #someid identifier -->
             <selector select="#someid" method="extend">
                 
-                    <display flex/>
+                    <display is="flex"></display>
                 
-                    <flex-direct row/>
+                    <flex-direct is="row"></flex-direct>
     
-                    <size>
-                        <height 100vh override/>
-                        <width 100vw/>
-                    </size>
-    
-                    <fonts>
-                        <typography font="[FONT_STRING_HERE]" weight="bold"/>
-                        <size 25px override>
-                        <color white/>
-                    </fonts>
+
+                    <height is="100vh" override></height>
+                    <width is="100vw"></size>
+
+                    <typography font="[FONT_STRING_HERE]" weight="bold"></typography>
+                    <size is="25px" override></size>
+                    <color is="white"/></fonts>
 
             </selector>
 
@@ -92,11 +89,13 @@
             <!-- This implementation will affect the parent element when referring to self(h3 will be affected) -->
             <h3>
 
+                This is a test
+
                 <selector select="self" method="override">
 
-                    <fonts>
-
-                    </fonts>
+                    <display is="flex"></display>
+                    <color is="blue"></color>
+                    <background-color is="black"></background-color>
 
                 </selector>
 
