@@ -260,7 +260,17 @@ document.querySelectorAll('selector').forEach((obj) => {
                 let parent = obj.parentNode;
                 obj.childNodes.forEach((child) => {
                     if(isValidCSS(child.nodeName.toLowerCase())) {
-                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                        if(method == "override") {
+                            parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
+                        } else if(method == "extend") {
+                            if("override" in child.attributes) {
+                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
+                            } else {
+                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                            }
+                        } else {
+                            log(2, "Invalid ancestor attribute detected! (only extend and override allowed)!");
+                        }
                     }
                 });
             } else {
@@ -271,7 +281,13 @@ document.querySelectorAll('selector').forEach((obj) => {
                         let parent = document.querySelector(select);
                         obj.childNodes.forEach((child) => {
                             if(isValidCSS(child.nodeName.toLowerCase())) {
-                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                                for(attr of child.attributes) {
+                                    if(attr.nodeName == "override") {
+                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
+                                    } else {
+                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                                    }
+                                }
                             }
                         });
                     }
@@ -280,7 +296,13 @@ document.querySelectorAll('selector').forEach((obj) => {
                         let parent = document.querySelector(select);
                         obj.childNodes.forEach((child) => {
                             if(isValidCSS(child.nodeName.toLowerCase())) {
-                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                                for(attr of child.attributes) {
+                                    if(attr.nodeName == "override") {
+                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
+                                    } else {
+                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
+                                    }
+                                }
                             }
                         });
                     } else {
