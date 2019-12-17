@@ -1,13 +1,15 @@
 //Helper functions
 if(true) { /* Used to set the scope of oHTML */
 
+//private objects used by ohtml
 let FUNC_POOL = {};
 let LOCAL_POOL = {};
+
+//TODO: Implement usage (not being used for the moment)
 let OPTIONS = {};
 
 //TODO: Implement custom properties that aren't able to be parsed
 //let PROPS_POOL = ['typography'];
-
 var StoragePool = {
     add: (set, val) => {
         localStorage.setItem("OHTML_POOL_VAR:"+set, val);
@@ -17,13 +19,14 @@ var StoragePool = {
     }
 }
 
+//gives public usage to global scope to the FUNC_POOL
 var FunctionPool = {
     run: (name, ...args) => {
         return FUNC_POOL[name].apply(this, args);
     }
 }
 
-//TODO: Implement usage
+//TODO: Implement usage (not being used for the moment)
 var OptionSet = {
     add: (optionsList) => {
         for(const [setting, value] of Object.entries(optionsList)) {
@@ -34,6 +37,7 @@ var OptionSet = {
     }
 }
 
+//custom logger function for quicker usage of logs, warnings, and errors
 var log = (severity, obj) => {
     switch(severity) {
         case 0:
@@ -53,7 +57,7 @@ var log = (severity, obj) => {
     }
 }
 
-
+//returns object with name and value of the elem argument's attributes
 let getElemAttrs = (elem) => {
     return [].slice.call(elem.attributes).map((attr) => {
         return {
@@ -63,14 +67,17 @@ let getElemAttrs = (elem) => {
     });
 }
 
+//checks to see if a provided css property is valid and exists
 let isValidCSS = (prop) => {
     return (prop in document.body.style);
 }
 
+//checks to see if an element with a class exists
 let hasClass = (name) => {
     return document.body.className.match(name);
 }
 
+//checks to see if an element with an id exists
 let hasID = (id) => {
     let elem;
     if(!id.startsWith("#")) {
@@ -81,10 +88,12 @@ let hasID = (id) => {
     return (typeof(elem) != 'undefined' && elem != null);
 }
 
+//returns the unsageStr argument with the replacements done
 let makeSafe = (unsafeStr) => {
     return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
 }
 
+//will take any escaped char and convert it back to a normal char
 let unescapeEntities = (input) => {
     let entities = [
         ['amp', '&'],
@@ -119,20 +128,23 @@ document.querySelectorAll('defs').forEach((obj) => {
         }
         obj.appendChild(getter);
     }
-
     if(get == null && (set != null && value != null && type != null)) {
-        if(type == "global") {
-            StoragePool.add(set, value);
-        } else if(type == "local") {
-            LOCAL_POOL[set] = value;
-        } else {
-            //default decl global var
-            StoragePool.add(set, value);
+        switch(type) {
+            case "global":
+                StoragePool.add(set, value);
+            break;
+            case "local":
+                LOCAL_POOL[set] = value;
+            break;
+            default:
+                //default decl global var
+                StoragePool.add(set, value);
+            break;
         }
     }
 });
 
-//Register for each tags
+//Register foreach tags
 document.querySelectorAll('foreach').forEach((obj) => {
     let iterator = obj.getAttribute("iterator");
     let type = obj.getAttribute("type");
@@ -162,10 +174,10 @@ document.querySelectorAll('foreach').forEach((obj) => {
                 });
             }
         } else {
-            log(2, "Error registering for-each with iterator " + iterator + "! Array not defined!")
+            log(2, "Error registering foreach with iterator " + iterator + "! Array not defined!")
         }
     } else {
-        log(2, "Error registering for-each with iterator " + iterator + "!")
+        log(2, "Error registering foreach with iterator " + iterator + "!")
     }
 
     if(idx != null && idx != "" && typeof idx !== "undefined") {
@@ -239,6 +251,7 @@ document.querySelectorAll("function").forEach((obj) => {
             obj.childNodes.forEach((node) => {
                 node.style = "display:none;";
                 if(node.nodeName.toLowerCase() == "script" && "ohtml" in node.attributes) {
+                    //surround the javascript in try catch for error handling
                     let js = "try{";
                     js += unescapeEntities(node.innerHTML);
                     js += "}catch(except){}";
@@ -254,6 +267,7 @@ document.querySelectorAll("function").forEach((obj) => {
     }
 });
 
+//Register selector tags
 document.querySelectorAll('selector').forEach((obj) => {
     let select = obj.getAttribute("select");
     let method = obj.getAttribute("method");
@@ -277,7 +291,7 @@ document.querySelectorAll('selector').forEach((obj) => {
                     }
                 });
             } else {
-                //specific id or class was set, not self
+                //specific id or class was set, not self (parent element)
                 let selectorType = select.charAt(0);
                 if(selectorType == "#") {
                     if(hasID(select)) {
