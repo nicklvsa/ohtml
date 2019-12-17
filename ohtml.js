@@ -5,6 +5,9 @@ let FUNC_POOL = {};
 let LOCAL_POOL = {};
 let OPTIONS = {};
 
+//TODO: Implement custom properties that aren't able to be parsed
+//let PROPS_POOL = ['typography'];
+
 var StoragePool = {
     add: (set, val) => {
         localStorage.setItem("OHTML_POOL_VAR:"+set, val);
