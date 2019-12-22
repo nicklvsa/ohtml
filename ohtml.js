@@ -77,6 +77,11 @@ let hasClass = (name) => {
     return document.body.className.match(name);
 }
 
+let childOf = (child, parent) => {
+    while((child = child.parentNode) && child !== parent);
+    return !!child;
+}
+
 //checks to see if an element with an id exists
 let hasID = (id) => {
     let elem;
@@ -153,7 +158,24 @@ document.querySelectorAll('foreach').forEach((obj) => {
     if(iterator != "" && def != "" && type != "") {
         if(iterator in window && typeof eval(iterator) !== "undefined") {
             for(iter of eval(iterator)) {
-                log(0, iter);
+                //TODO: implement @(_VAR_NAME_)
+                /*obj.childNodes.forEach((objChild) => {
+                    if(objChild.nodeValue != null) {
+                        if(objChild.nodeValue.trim().startsWith("@("))  {
+                            let getter = objChild.nodeValue.trim().substring(objChild.nodeValue.trim().indexOf("@(")+2, objChild.nodeValue.trim().indexOf(")")).trim();
+                            log(0, objChild.nodeValue.trim().substring(getter.length+2));
+                            if(objChild.nodeValue.trim().substring(getter.length+2) == ")") {
+                                if(getter.toLowerCase() == def.toLowerCase()) {
+                                    obj.appendChild(document.createTextNode(iter));
+                                } else {
+                                    log(2, "Cannot find iterator definition: " + getter);
+                                }
+                            } else {
+                                log(2, "Could not find end of @property");
+                            }
+                        }
+                    }
+                });*/
                 document.querySelectorAll('each').forEach((sym) => {
                     let attrs = getElemAttrs(sym);
                     if(attrs[0].name == def) {
@@ -162,7 +184,7 @@ document.querySelectorAll('foreach').forEach((obj) => {
                             symDiv.className = def;
                             symDiv.id = iter;
                             symDiv.innerHTML = document.createTextNode(iter).data;
-                            if(sym.parentElement.tagName.toLowerCase() == obj.tagName.toLowerCase()) {
+                            if(childOf(sym, obj)) {
                                 sym.appendChild(symDiv);
                             } else {
                                 log(2, "Symbolic object tags must only be used in a foreach loop!");
