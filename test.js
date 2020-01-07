@@ -4,6 +4,7 @@ var pies = ['chocolate', 'banana', 'pumpkin', 'lemon'];
 var somevalue = "testing";
 var someothervalue = "cool";
 
+//testing the ability to call functions in ohtml
 function testing() {
     return false;
 }
