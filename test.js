@@ -1,5 +1,6 @@
 var drinks = ['coke', 'water', 'sprite', 'dew'];
 var pies = ['chocolate', 'banana', 'pumpkin', 'lemon'];
+var phones = ['apple', 'samsung', 'google', 'htc'];
 
 var somevalue = "testing";
 var someothervalue = "cool";

@@ -17,15 +17,17 @@
 
        <div>
             <foreach type="div" iterator="pies" as="pie">
-                <each pie/>
+                <strong>
+                    <each pie/>
+                </strong>
             </foreach>
        </div>
 
-        <div>
-            <foreach type="div" iterator="drinks" as="drink">
+        <ul>
+            <foreach type="li" iterator="drinks" as="drink">
                 <each drink/>
             </foreach>
-        </div>
+        </ul>
 
         <!-- Testing if tags -->
 
