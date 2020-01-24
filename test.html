@@ -98,9 +98,7 @@
                     <background-color is="black"></background-color>
 
                 </selector>
-
             </h3>
-
         </div>
 
         <div>
@@ -140,6 +138,15 @@
                     for(let i = 0; i < 7; i++) {
                         console.log(message);
                     }
+
+
+                    var cool = {ref: "some value"};
+
+                    byref(cool, function() {
+                        return "poop";
+                    });
+
+                    console.log(cool);
                 </script>
             </function>
         </div>

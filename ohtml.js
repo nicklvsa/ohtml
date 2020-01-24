@@ -275,8 +275,16 @@ document.querySelectorAll("function").forEach((obj) => {
                 if(node.nodeName.toLowerCase() == "script" && "ohtml" in node.attributes) {
                     //surround the javascript in try catch for error handling
                     let js = "try{";
+                    //js += "window.onerror=function(){return true;}";
+                    js += `function byref(ref, changeFunc) {
+                        if(changeFunc instanceof Function) {
+                            ref.ref = changeFunc();
+                        }
+                    }`;
                     js += unescapeEntities(node.innerHTML);
                     js += "}catch(except){}";
+                    //log(1, js)
+
                     node.innerHTML = js;
                     if(args == "" || args == null) {
                         FUNC_POOL[name] = new Function("", js);
