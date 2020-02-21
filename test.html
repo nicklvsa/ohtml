@@ -141,9 +141,11 @@
                         console.log(message);
                     }
 
+                    // add ref object to enable pass-by-reference
                     var cool = {ref: "some value"};
 
-                    byref(cool, () => {
+                    // testing "virtual" pass-by-reference
+                    ref(cool, () => {
                         return "new value";
                     });
 

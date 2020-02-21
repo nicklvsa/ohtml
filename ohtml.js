@@ -276,7 +276,7 @@ document.querySelectorAll("function").forEach((obj) => {
                     //surround the javascript in try catch for error handling
                     let js = "try{";
                     //js += "window.onerror=function(){return true;}";
-                    js += `function byref(ref, changeFunc) {
+                    js += `function ref(ref, changeFunc) {
                         if(changeFunc instanceof Function) {
                             ref.ref = null;
                             if(typeof changeFunc() !== undefined) {
