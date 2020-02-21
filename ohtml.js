@@ -278,7 +278,10 @@ document.querySelectorAll("function").forEach((obj) => {
                     //js += "window.onerror=function(){return true;}";
                     js += `function byref(ref, changeFunc) {
                         if(changeFunc instanceof Function) {
-                            ref.ref = changeFunc();
+                            ref.ref = null;
+                            if(typeof changeFunc() !== undefined) {
+                                ref.ref = changeFunc();
+                            }
                         }
                     }`;
                     js += unescapeEntities(node.innerHTML);
@@ -288,6 +291,7 @@ document.querySelectorAll("function").forEach((obj) => {
                     node.innerHTML = js;
                     if(args == "" || args == null) {
                         FUNC_POOL[name] = new Function("", js);
+                        
                     } else {
                         FUNC_POOL[name] = new Function(args, js);
                     }
@@ -362,6 +366,24 @@ document.querySelectorAll('selector').forEach((obj) => {
         }        
     }
 });
+
+// TODO - allow state updates to update dom with dynamic content
+function _state(func, callback, ...data) {
+    if (callback instanceof Function) {
+        let script, tag;
+        script = document.createElement("script");
+        script.type = 'text/javascript';
+        script.innerHTML = `
+            try {
+                let response = `+func+`();
+                callback(response);
+            } catch(except) {}
+        `;
+        tag = document.getElementsByTagName("script")[0];
+        tag.parentNode.insertBefore(script, 'tag');
+        //window.location.reload();
+    }
+}
 
 
 } /* End scope decl of oHTML */

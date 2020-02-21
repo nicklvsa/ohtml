@@ -15,8 +15,10 @@
 
         <!-- Testing foreach tags -->
 
+        <button type="button" onClick="_state(addToPies(), someCallback(), 5);">Add new pie</button>
+
        <div>
-            <foreach type="div" iterator="pies" as="pie">
+            <foreach id="pie_loop" type="div" iterator="pies" as="pie">
                 <strong>
                     <each pie/>
                 </strong>
@@ -139,11 +141,10 @@
                         console.log(message);
                     }
 
-
                     var cool = {ref: "some value"};
 
-                    byref(cool, function() {
-                        return "poop";
+                    byref(cool, () => {
+                        return "new value";
                     });
 
                     console.log(cool);

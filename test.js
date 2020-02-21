@@ -10,6 +10,15 @@ function testing() {
     return false;
 }
 
+function addToPies() {
+    let rand = "pie" + Math.floor(Math.random() * 100) + 1;
+    pies.push(rand);
+}
+
+function someCallback(response) {
+    alert(response);
+}
+
 //Must use onload wrapper to retreive any needed ohtml defs
 window.onload = () => {
 
