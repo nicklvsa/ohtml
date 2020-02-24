@@ -1,0 +1,34 @@
+<html>
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="./ohtml.js"></script>
+        <script defer src="./example.js"></script>
+
+        <title>Test</title>
+        
+        </head>
+        
+        <body>
+        
+        <!-- currently only push and pop are working for live data state updates -->
+        <ul %for="entries of entry -> render(li)">
+            ${entry}
+        </ul>
+
+        <ul %for="pies of pie -> render(li)">
+            ${pie}
+        </ul>
+
+        <input type="text" placeholder="bound to testing var" :testing>
+
+        <button type="button" @click="getStateTesting">Get State Testing</button>
+
+        <button type="button" @click="setStateTesting">Set State Testing</button>
+
+        <br/><br/>
+
+        <button type="button" @click="addArray">Add Array State</button>
+        <button type="button" @click="popArray">Pop Array State</button>
+    </body>
+</html>

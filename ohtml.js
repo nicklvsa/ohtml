@@ -1,389 +1,251 @@
-//Helper functions
-if(true) { /* Used to set the scope of oHTML */
+let GLOB_DATA;
 
-//private objects used by ohtml
-let FUNC_POOL = {};
-let LOCAL_POOL = {};
+const handleString = (input) => new Function('data', `
+    return \`${input}\`
+`);
 
-//TODO: Implement usage (not being used for the moment)
-let OPTIONS = {};
-
-//TODO: Implement custom properties that aren't able to be parsed
-//let PROPS_POOL = ['typography'];
-var StoragePool = {
-    add: (set, val) => {
-        localStorage.setItem("OHTML_POOL_VAR:"+set, val);
-    },
-    get: (val) => {
-        return localStorage.getItem("OHTML_POOL_VAR:"+val);
-    }
-}
-
-//gives public usage to global scope to the FUNC_POOL
-var FunctionPool = {
-    run: (name, ...args) => {
-        return FUNC_POOL[name].apply(this, args);
-    }
-}
-
-//TODO: Implement usage (not being used for the moment)
-var OptionSet = {
-    add: (optionsList) => {
-        for(const [setting, value] of Object.entries(optionsList)) {
-            if(setting != null && value != null) {
-                OPTIONS[setting] = value;
-            }
-        }
-    }
-}
-
-//custom logger function for quicker usage of logs, warnings, and errors
-var log = (severity, obj) => {
-    switch(severity) {
+const out = (severity, input) => {
+    switch (severity) {
         case 0:
-            //log
-            console.log("[LOG]: " + obj);
+            console.log('[OHTML]: (Log) - ' + input);
             break;
         case 1:
-            //warning
-            console.warn("[WARN]: " + obj);
+            console.warn('[OHTML]: (Warn) - ' + input);
             break;
         case 2:
-            //error
-            console.error("[ERROR]: " + obj);
+            console.error('[OHTML]: (Error) - ' + input);
             break;
         default:
+            console.log('[OHTML] (Log) - ' + input);
             break;
     }
-}
+};
 
-//returns object with name and value of the elem argument's attributes
-let getElemAttrs = (elem) => {
-    return [].slice.call(elem.attributes).map((attr) => {
-        return {
-            name: attr.name,
-            value: attr.value
+var parseOHTML = (frag, data, useNodes = true) => {
+
+    GLOB_DATA = data;
+
+    if (useNodes) {
+        const iter = document.createNodeIterator(frag, NodeFilter.SHOW_TEXT, null);
+        const nodes = {
+          *[Symbol.iterator]() {
+              const now = iter.nextNode();
+              //let content = iter.nextElementSibling;
+              yield now ? { next: now, done: false } : { done: true };
+          }
+        };
+  
+        for (node of nodes) {
+           // console.log(node.next);
+        }
+    }  
+
+    const modifierTypes = [
+        'render',
+        'set'
+    ];
+
+    let parseAttrModifier = (render) => {
+        if (render != null) {
+            for (mod of modifierTypes) {
+                if (render.includes(mod)) {
+
+                    const args = [];
+
+                    const modifierType = render.substring(0, render.indexOf('(')).trim();
+                    const argString = render.substring(render.indexOf('(') + 1, render.indexOf(')')).trim();
+    
+                    if (argString.includes(',')) {
+                        const argStrings = argString.split(',');
+                        for (arg of argStrings) {
+                            args.push(arg);
+                        }
+                    } else {
+                        args.push(argString);
+                    }
+
+                    switch (modifierType) {
+                        case "render":
+                            if (args.length == 1) { //args only contains a single element
+                                const element = "<" + args + " ohtml>%s</" + args + ">"
+                                return element;
+                            }
+                            return null;
+                        case "set": //TODO: implement
+                            return null;
+                        default:
+                            return null;
+                    }
+                }
+            }
+        }
+    };
+
+    let parseDataHolder = (html) => {
+        if (html != null) {
+            if (html.includes('$') && html.includes('{') && html.includes('}')) {
+                return html.substring(html.indexOf('${') + 2, html.indexOf('}'));
+            }
+        }
+    };
+
+    let getElemAttrs = (elem) => {
+        return [].slice.call(elem.attributes).map((attr) => {
+            return {
+                name: attr.name,
+                value: attr.value
+            }
+        });
+    };
+
+  frag.querySelectorAll('*').forEach((elem) => {
+    elem.getAttributeNames().forEach((name) => {
+
+        if (name.startsWith(':')) { //string binding
+            const attr = name.substring(1);
+            if (GLOB_DATA[attr]) {
+                if (elem instanceof HTMLInputElement) {
+                    elem.addEventListener('keyup', (evt) => {
+                        if (evt != null) {
+                            GLOB_DATA[attr] = elem.value;
+                        }
+                    });
+                } else {
+                    out(2, "Could not bind to element that is not of type input");
+                }
+            }
+            //elem.setAttribute(name.substring(1), handleString(elem.getAttribute(name))(data));
+            //elem.removeAttribute(name);
+            
+        } else if (name.startsWith('@')) { //action binding
+
+            elem.addEventListener(name.substring(1), GLOB_DATA[elem.getAttribute(name)]);
+            elem.removeAttribute(name);
+
+        } else if (name.startsWith('?')) { //conditional binding
+
+            const attr = name.substring(1);
+            if (GLOB_DATA[attr]) {
+                elem.setAttribute(attr, '');
+            }
+            elem.removeAttribute(name);
+
+        } else if (name.startsWith('%')) { //keyword binding
+
+            const beginner = '%';
+            const customForModifier = '->';
+            const attr = name.substring(1).trim();
+
+            switch (attr) {
+                case "if":
+
+                    if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
+                        elem.remove();
+                    }
+
+                case "for":
+
+                   const loop = elem.getAttribute(beginner + 'for');
+                   if (loop != null) {
+                        if (loop.includes(customForModifier)) {
+                            let outputs = [];
+                            let backupDom;
+
+                            const elemData = elem.textContent.trim();
+
+                            const validArray = loop.split('->')[0].split('of')[0].trim();
+                            const validIterator = loop.split('->')[0].split('of')[1].trim();
+
+                            const modifier = loop.split('->')[1].trim();
+
+                            const iteratorTxtVar = parseDataHolder(elemData); 
+                            const tag = parseAttrModifier(modifier);
+
+                            let attrs = getElemAttrs(elem);
+                            if (attrs[0] !== "ohtml") {
+                                backupDom += elem.innerHTML.replace('${'+iteratorTxtVar+'}', '');
+                                elem.textContent = "";
+                            }
+
+                            for (let iter of eval(validArray)) {
+                                outputs.push(tag.replace('%s', iter));
+                            }
+
+                            if (iteratorTxtVar == validIterator) {
+                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '');
+                                elem.innerHTML += backupDom.replace('undefined', '').trim();
+                                for (let out of outputs) {
+                                    elem.innerHTML += out;
+                                }
+                            } else {
+                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '');
+                                out(2, 'Iterator did not match the replacer in for loop!');
+                            } 
+
+                            
+                            eval(validArray).push = function() {
+                                
+                                Array.prototype.push.apply(this, arguments);
+
+                                for (let iter of eval(validArray)) {
+                                    outputs = [];    
+                                    outputs.push(tag.replace('%s', iter));
+                                }
+
+                                if (iteratorTxtVar == validIterator) {
+                                    for (let out of outputs) {
+                                        elem.innerHTML += out;
+                                    }
+                                } else {
+                                    out(2, 'Iterator did not match the replacer in for loop!');
+                                } 
+                            };
+
+                            eval(validArray).pop = function() {
+
+                                Array.prototype.pop.apply(this, arguments);
+
+                                /* 
+                                    TODO: allow other elements to be inside of a for tag and ignore them when popping
+                                */
+
+                                elem.innerHTML = "";
+
+                                for (let iter of eval(validArray)) {
+                                    outputs = [];
+                                    elem.innerHTML += tag.replace('%s', iter);
+                                }
+                            };
+                            
+                        }
+                   }
+                case "while": //TODO: implement
+                    break;
+                case "switch": //TODO: implement
+                    break;
+                default:
+                    break;
+            }
         }
     });
-}
+  });
+};
 
-//checks to see if a provided css property is valid and exists
-let isValidCSS = (prop) => {
-    return (prop in document.body.style);
-}
-
-//checks to see if an element with a class exists
-let hasClass = (name) => {
-    return document.body.className.match(name);
-}
-
-let childOf = (child, parent) => {
-    while((child = child.parentNode) && child !== parent);
-    return !!child;
-}
-
-//checks to see if an element with an id exists
-let hasID = (id) => {
-    let elem;
-    if(!id.startsWith("#")) {
-        elem = document.getElementById(id);
-    } else {
-        elem = 'undefined';
+var StateManager = {
+    getState: (stateVar) => {
+        return GLOB_DATA[stateVar];
+    },
+    setState: (stateVar, value) => {
+        GLOB_DATA[stateVar] = value;
     }
-    return (typeof(elem) != 'undefined' && elem != null);
-}
-
-//returns the unsageStr argument with the replacements done
-let makeSafe = (unsafeStr) => {
-    return unsafeStr.replace("alert(", "").replace("prompt(", "").replace("confirm(", "").replace("eval(", "");
-}
-
-//will take any escaped char and convert it back to a normal char
-let unescapeEntities = (input) => {
-    let entities = [
-        ['amp', '&'],
-        ['apos', '\''],
-        ['#x27', '\''],
-        ['#x2F', '/'],
-        ['#39', '\''],
-        ['#47', '/'],
-        ['lt', '<'],
-        ['gt', '>'],
-        ['nbsp', ' '],
-        ['quot', '"']
-    ];
-    for (var i = 0, max = entities.length; i < max; ++i) input = input.replace(new RegExp('&'+entities[i][0]+';', 'g'), entities[i][1]);
-    return input;
-}
+};
 
 
-//Register defs tags
-document.querySelectorAll('defs').forEach((obj) => {
-    let get = obj.getAttribute("get");
-    let set = obj.getAttribute("set");
-    let type = obj.getAttribute("scope");
-    let value = obj.getAttribute("value");
-    if(get != null && type != null && (set == null || value == null)) {
-        let getter = document.createElement('div');
-        if(type == "global") {
-            getter.innerHTML = StoragePool.get(get);
-        }
-        if(type == "local") {
-            getter.innerHTML = LOCAL_POOL[get];
-        }
-        obj.appendChild(getter);
-    }
-    if(get == null && (set != null && value != null && type != null)) {
-        switch(type) {
-            case "global":
-                StoragePool.add(set, value);
-            break;
-            case "local":
-                LOCAL_POOL[set] = value;
-            break;
-            default:
-                //default decl global var
-                StoragePool.add(set, value);
-            break;
-        }
-    }
-});
-
-//Register foreach tags
-document.querySelectorAll('foreach').forEach((obj) => {
-    let iterator = obj.getAttribute("iterator");
-    let type = obj.getAttribute("type");
-    let idx = obj.getAttribute("index");
-    let def = obj.getAttribute("as");
-    if(iterator != "" && def != "" && type != "") {
-        if(iterator in window && typeof eval(iterator) !== "undefined") {
-            for(iter of eval(iterator)) {
-                //TODO: implement @(_VAR_NAME_)
-                /*obj.childNodes.forEach((objChild) => {
-                    if(objChild.nodeValue != null) {
-                        if(objChild.nodeValue.trim().startsWith("@("))  {
-                            let getter = objChild.nodeValue.trim().substring(objChild.nodeValue.trim().indexOf("@(")+2, objChild.nodeValue.trim().indexOf(")")).trim();
-                            log(0, objChild.nodeValue.trim().substring(getter.length+2));
-                            if(objChild.nodeValue.trim().substring(getter.length+2) == ")") {
-                                if(getter.toLowerCase() == def.toLowerCase()) {
-                                    obj.appendChild(document.createTextNode(iter));
-                                } else {
-                                    log(2, "Cannot find iterator definition: " + getter);
-                                }
-                            } else {
-                                log(2, "Could not find end of @property");
-                            }
-                        }
-                    }
-                });*/
-                document.querySelectorAll('each').forEach((sym) => {
-                    let attrs = getElemAttrs(sym);
-                    if(attrs[0].name == def) {
-                        if(type != "script" && !type.includes("script") && !type.includes("applet") && !type.includes("embed")) {
-                            let symDiv = document.createElement(type);
-                            symDiv.className = def;
-                            symDiv.id = iter;
-                            symDiv.innerHTML = document.createTextNode(iter).data;
-                            if(childOf(sym, obj)) {
-                                sym.appendChild(symDiv);
-                            } else {
-                                log(2, "Symbolic object tags must only be used in a foreach loop!");
-                            }
-                        } else {
-                            log(2, "You cannot use script tags as an sym output type!");
-                        }
-                    }
-                });
-            }
-        } else {
-            log(2, "Error registering foreach with iterator " + iterator + "! Array not defined!")
-        }
-    } else {
-        log(2, "Error registering foreach with iterator " + iterator + "!")
-    }
-
-    if(idx != null && idx != "" && typeof idx !== "undefined") {
-        log(2, "Index property not needed! Index used: " + idx)
-    }
-});
-
-//Register if/else statements
-//TODO: Implement elseif tags
-document.querySelectorAll('if').forEach((obj) => {
-    document.querySelectorAll('else').forEach((elseStmt) => elseStmt.setAttribute("style", "display:none;"));
-    let query = obj.getAttribute("query");
-    if(query != "") {
-        query = makeSafe(query.replace(" ", ""));
-        if(eval(query) !== false) {
-            console.log("Query is true: " + query)
-        } else {
-            obj.childNodes.forEach((ifChilds) => {
-                if(ifChilds.nodeName.toLowerCase() !== "else") {
-                   ifChilds.style = "display:none;";
-                } else {
-                    ifChilds.style = "display:;";
-                }
-            });
-            document.querySelectorAll('else').forEach((elseObj) => {
-                if(elseObj.parentElement.tagName == obj.tagName) {
-                    elseObj.setAttribute("style", "display:;");
-                } else {
-                    log(2, "Else tag must be used within an if tag!");
-                }
-            });
-        }
-    }
-});
-
-//Register switch/case tags
-document.querySelectorAll('switch').forEach((obj) => {
-    let hasCase = false;
-    let on = obj.getAttribute('on');
-    if(on != "") {
-        on = makeSafe(on.replace(" ", ""));
-        if(obj.hasChildNodes()) {
-            obj.childNodes.forEach((node) => {
-                if(node.nodeName.toLowerCase() == "case" || node.nodeName.toLowerCase() == "default") {
-                    node.style = "display:none;";
-                    for(attr of node.attributes) {
-                        if(eval(on) == attr.nodeName) {
-                            node.style = "display:;";
-                            hasCase = true;
-                        }   
-                    }
-                } else {
-                    node.style = "display:none;";
-                }
-                if(node.nodeName.toLowerCase() == "default" && !hasCase) {
-                    node.style = "display:;";
-                } 
-            });
-        } else {
-            log(2, "Switch tag does not contain any children!");
-        }
-    }
-});
-
-//Register function tags
-document.querySelectorAll("function").forEach((obj) => {
-    let name = obj.getAttribute("name");
-    let args = obj.getAttribute("args");
-    if(name != "") {
-        if(obj.hasChildNodes()) {
-            obj.childNodes.forEach((node) => {
-                node.style = "display:none;";
-                if(node.nodeName.toLowerCase() == "script" && "ohtml" in node.attributes) {
-                    //surround the javascript in try catch for error handling
-                    let js = "try{";
-                    //js += "window.onerror=function(){return true;}";
-                    js += `function ref(ref, changeFunc) {
-                        if(changeFunc instanceof Function) {
-                            ref.ref = null;
-                            if(typeof changeFunc() !== undefined) {
-                                ref.ref = changeFunc();
-                            }
-                        }
-                    }`;
-                    js += unescapeEntities(node.innerHTML);
-                    js += "}catch(except){}";
-                    //log(1, js)
-
-                    node.innerHTML = js;
-                    if(args == "" || args == null) {
-                        FUNC_POOL[name] = new Function("", js);
-                        
-                    } else {
-                        FUNC_POOL[name] = new Function(args, js);
-                    }
-                }   
-            });
-        }
-    }
-});
-
-//Register selector tags
-document.querySelectorAll('selector').forEach((obj) => {
-    let select = obj.getAttribute("select");
-    let method = obj.getAttribute("method");
-    if(method != "" && select != "") {
-        if(obj.hasChildNodes()) {
-            if(select.toLowerCase() == "self") {
-                let parent = obj.parentNode;
-                obj.childNodes.forEach((child) => {
-                    if(isValidCSS(child.nodeName.toLowerCase())) {
-                        if(method == "override") {
-                            parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
-                        } else if(method == "extend") {
-                            if("override" in child.attributes) {
-                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
-                            } else {
-                                parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
-                            }
-                        } else {
-                            log(2, "Invalid ancestor attribute detected! (only extend and override allowed)!");
-                        }
-                    }
-                });
-            } else {
-                //specific id or class was set, not self (parent element)
-                let selectorType = select.charAt(0);
-                if(selectorType == "#") {
-                    if(hasID(select)) {
-                        let parent = document.querySelector(select);
-                        obj.childNodes.forEach((child) => {
-                            if(isValidCSS(child.nodeName.toLowerCase())) {
-                                for(attr of child.attributes) {
-                                    if(attr.nodeName == "override") {
-                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
-                                    } else {
-                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
-                                    }
-                                }
-                            }
-                        });
-                    }
-                } else if(selectorType == ".") {
-                    if(hasClass(select)) {
-                        let parent = document.querySelector(select);
-                        obj.childNodes.forEach((child) => {
-                            if(isValidCSS(child.nodeName.toLowerCase())) {
-                                for(attr of child.attributes) {
-                                    if(attr.nodeName == "override") {
-                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+" !important"+";").replace("null", ""));
-                                    } else {
-                                        parent.setAttribute("style", (parent.getAttribute("style")+child.nodeName.toLowerCase()+":"+child.getAttribute("is")+";").replace("null", ""));
-                                    }
-                                }
-                            }
-                        });
-                    } else {
-                        console.log("does not have class");
-                    }
-                } else {
-                    console.log("Error - selector type invalid: " + select);
-                }
-            }   
-        }        
-    }
-});
-
-// TODO - allow state updates to update dom with dynamic content
-function _state(func, callback, ...data) {
-    if (callback instanceof Function) {
-        let script, tag;
-        script = document.createElement("script");
-        script.type = 'text/javascript';
-        script.innerHTML = `
-            try {
-                let response = `+func+`();
-                callback(response);
-            } catch(except) {}
-        `;
-        tag = document.getElementsByTagName("script")[0];
-        tag.parentNode.insertBefore(script, 'tag');
-        //window.location.reload();
-    }
-}
-
-
-} /* End scope decl of oHTML */
+var tmpl = (id) => {
+    const template = document.getElementById(id);
+    return (data) => {
+        const clone = template.content.cloneNode(true);
+        parseOHTML(clone, data);
+        return clone;
+    };
+};
