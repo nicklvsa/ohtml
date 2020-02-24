@@ -78,9 +78,9 @@ parseOHTML(/*DOM Container - usually `document.body`*/document.body, {
    items.push('some cool new item');
 
 
-   /*
+    /*
         StateManager will modify the value of the current data state.
-   */
+    */
     const value = StateManager.getState('anotherProp');
     StateManager.setState('anotherProp', 'something new');
 ```
