@@ -34,10 +34,6 @@ parseOHTML(/*DOM Container - usually `document.body`*/document.body, {
 }, false);
 ```
 
-### Known Issues / Unexpected Behaviors
-- if statements will not update in real time even if the value being checked has changed
-- for loops will remove all content in between it's tag even if the content is not apart of the loop
-
 #### Features
 - action events
 
@@ -88,6 +84,10 @@ parseOHTML(/*DOM Container - usually `document.body`*/document.body, {
     const value = StateManager.getState('anotherProp');
     StateManager.setState('anotherProp', 'something new');
 ```
+
+### Known Issues / Unexpected Behaviors
+- if statements will not update in real time even if the value being checked has changed
+- for loops will remove all content in between it's tag even if the content is not apart of the loop
 
 ### WIP Features
 - switch Statements
