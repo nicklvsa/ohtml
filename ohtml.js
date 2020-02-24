@@ -23,6 +23,9 @@ const out = (severity, input) => {
 
 var parseOHTML = (frag, data, useNodes = true) => {
 
+    //setup empty ref
+    let checker = {ref: new Object()};
+    
     GLOB_DATA = data;
 
     if (useNodes) {
@@ -98,6 +101,19 @@ var parseOHTML = (frag, data, useNodes = true) => {
         });
     };
 
+    let startParseIf = (looper, statement) => {
+        looper.ref = setInterval(() => {
+            if (GLOB_DATA[statement]) {
+                const query = GLOB_DATA[statement];
+                console.log(query);
+            }
+        }, 200);
+    };
+
+    let stopParseIf = (parserLoop) => {
+        clearInterval(parserLoop.ref);
+    };
+
   frag.querySelectorAll('*').forEach((elem) => {
     elem.getAttributeNames().forEach((name) => {
 
@@ -141,8 +157,11 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
                     //TODO: add state updating
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
+                        stopParseIf(checker);
                         elem.remove();
                     }
+
+                    startParseIf(checker, elem.getAttribute(beginner + 'if'));
                     
                 case "for":
 
