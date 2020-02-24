@@ -14,11 +14,11 @@
         <h3 %if="testing">Hello, World</h3>
 
         <!-- currently only push and pop are working for live data state updates -->
-        <ul %for="entries of entry -> render(li)">
+        <ul %for="entry of entries -> render(li)">
             ${entry}
         </ul>
 
-        <ul %for="pies of pie -> render(li)">
+        <ul %for="pie of pies -> render(li)">
             ${pie}
         </ul>
 

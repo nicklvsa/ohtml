@@ -25,7 +25,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
     //setup empty ref
     let checker = {ref: new Object()};
-    
+
     GLOB_DATA = data;
 
     if (useNodes) {
@@ -101,11 +101,11 @@ var parseOHTML = (frag, data, useNodes = true) => {
         });
     };
 
-    let startParseIf = (looper, statement) => {
+    let startParseIf = (looper, statement, elem, callback) => {
         looper.ref = setInterval(() => {
             if (GLOB_DATA[statement]) {
                 const query = GLOB_DATA[statement];
-                console.log(query);
+                callback(query, elem);
             }
         }, 200);
     };
@@ -158,10 +158,15 @@ var parseOHTML = (frag, data, useNodes = true) => {
                     //TODO: add state updating
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
                         stopParseIf(checker);
-                        elem.remove();
+                        elem.style = "display:none;";
+                        //elem.remove();
                     }
 
-                    startParseIf(checker, elem.getAttribute(beginner + 'if'));
+                    startParseIf(checker, elem.getAttribute(beginner + 'if'), (query) => {
+                        elem.style = "display:;";
+                        //console.log(elemResponse);
+                    });
+
                     
                 case "for":
 
@@ -173,8 +178,8 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
                             const elemData = elem.textContent.trim();
 
-                            const validArray = loop.split('->')[0].split('of')[0].trim();
-                            const validIterator = loop.split('->')[0].split('of')[1].trim();
+                            const validIterator = loop.split('->')[0].split('of')[0].trim();
+                            const validArray = loop.split('->')[0].split('of')[1].trim();
 
                             const modifier = loop.split('->')[1].trim();
 
