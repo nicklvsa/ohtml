@@ -16,6 +16,7 @@ function generateRandomPie() {
 	pies.push(rand);
 }
 
+//setup the parser
 parseOHTML(document.body, {
 	getStateTesting() {
 		alert(StateManager.getState('testing'));
@@ -30,7 +31,7 @@ parseOHTML(document.body, {
 	popArray() {
 		pies.pop();
 	},
-	testing: "test",
+	testing: "",
 	somethingElse: true
 }, false);
 

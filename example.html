@@ -7,10 +7,12 @@
 
         <title>Test</title>
         
-        </head>
+    </head>
         
-        <body>
+    <body>
         
+        <h3 %if="testing">Hello, World</h3>
+
         <!-- currently only push and pop are working for live data state updates -->
         <ul %for="entries of entry -> render(li)">
             ${entry}

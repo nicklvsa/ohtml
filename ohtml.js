@@ -103,7 +103,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
         if (name.startsWith(':')) { //string binding
             const attr = name.substring(1);
-            if (GLOB_DATA[attr]) {
+            if (GLOB_DATA[attr] != null) {
                 if (elem instanceof HTMLInputElement) {
                     elem.addEventListener('keyup', (evt) => {
                         if (evt != null) {
@@ -139,10 +139,11 @@ var parseOHTML = (frag, data, useNodes = true) => {
             switch (attr) {
                 case "if":
 
+                    //TODO: add state updating
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
                         elem.remove();
                     }
-
+                    
                 case "for":
 
                    const loop = elem.getAttribute(beginner + 'for');
@@ -241,11 +242,12 @@ var StateManager = {
 };
 
 
-var tmpl = (id) => {
+//TODO: finish template parsing
+/*var tmpl = (id) => {
     const template = document.getElementById(id);
     return (data) => {
         const clone = template.content.cloneNode(true);
         parseOHTML(clone, data);
         return clone;
     };
-};
+};*/
