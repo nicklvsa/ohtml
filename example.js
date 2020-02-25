@@ -32,6 +32,7 @@ parseOHTML(document.body, {
 		pies.pop();
 	},
 	testing: "",
+	some_var: "shown_test",
 	somethingElse: true
 }, false);
 

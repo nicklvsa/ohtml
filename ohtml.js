@@ -22,10 +22,6 @@ const out = (severity, input) => {
 };
 
 var parseOHTML = (frag, data, useNodes = true) => {
-
-    //setup empty ref
-    let checker = {ref: new Object()};
-
     GLOB_DATA = data;
 
     if (useNodes) {
@@ -101,19 +97,6 @@ var parseOHTML = (frag, data, useNodes = true) => {
         });
     };
 
-    let startParseIf = (looper, statement, elem, callback) => {
-        looper.ref = setInterval(() => {
-            if (GLOB_DATA[statement]) {
-                const query = GLOB_DATA[statement];
-                callback(query, elem);
-            }
-        }, 200);
-    };
-
-    let stopParseIf = (parserLoop) => {
-        clearInterval(parserLoop.ref);
-    };
-
   frag.querySelectorAll('*').forEach((elem) => {
     elem.getAttributeNames().forEach((name) => {
 
@@ -157,15 +140,14 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
                     //TODO: add state updating
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
-                        stopParseIf(checker);
-                        elem.style = "display:none;";
-                        //elem.remove();
+                        //stopParseIf(checker);
+                        elem.remove();
                     }
 
-                    startParseIf(checker, elem.getAttribute(beginner + 'if'), (query) => {
+                    /*startParseIf(checker, elem.getAttribute(beginner + 'if'), (query) => {
                         elem.style = "display:;";
                         //console.log(elemResponse);
-                    });
+                    });*/
 
                     
                 case "for":
@@ -247,6 +229,32 @@ var parseOHTML = (frag, data, useNodes = true) => {
                 case "while": //TODO: implement
                     break;
                 case "switch": //TODO: implement
+
+                        const switcher = elem.getAttribute(beginner + 'switch');
+                        if (switcher != null) {
+                            if (elem.hasChildNodes()) {
+                                elem.childNodes.forEach((node) => {
+
+                                    if (node.attributes != null) {
+                                        for (let attr of node.attributes) {
+
+                                            const parent = node.parentNode;
+                                            if (beginner + 'switch' in parent.attributes) {
+                                                if (GLOB_DATA[switcher] != null) {
+
+                                                    const caseValue = node.getAttribute(beginner + 'case');                                 
+                                                    if (GLOB_DATA[switcher] !== caseValue) {
+                                                        //console.log('SWITCH: ' + switcher + ' | is: ' + caseValue);
+                                                        node.remove();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
                     break;
                 default:
                     break;
