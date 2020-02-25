@@ -159,7 +159,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                             let backupDom;
 
                             const elemData = elem.textContent.trim();
-
+                            
                             const validIterator = loop.split('->')[0].split('of')[0].trim();
                             const validArray = loop.split('->')[0].split('of')[1].trim();
 
@@ -189,7 +189,6 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 out(2, 'Iterator did not match the replacer in for loop!');
                             } 
 
-                            
                             eval(validArray).push = function() {
                                 
                                 Array.prototype.push.apply(this, arguments);
