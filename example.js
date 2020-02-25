@@ -18,21 +18,27 @@ function generateRandomPie() {
 
 //setup the parser
 parseOHTML(document.body, {
+
 	getStateTesting() {
 		alert(StateManager.getState('testing'));
 	},
+
 	setStateTesting() {
 		StateManager.setState('testing', 'abc');
 		alert(StateManager.getState('testing'));
 	},
+
 	addArray() {
 		generateRandomPie();
 	},
+
 	popArray() {
 		pies.pop();
 	},
+
 	testing: "",
-	some_var: "shown_test",
+	some_var: "some_other_value",
 	somethingElse: true
+
 }, false);
 
