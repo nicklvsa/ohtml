@@ -11,6 +11,13 @@ const pies = [
 	'cherry'
 ];
 
+const examples = [
+	'example0',
+	'example1',
+	'example2',
+	'example3'
+];
+
 function generateRandomPie() {
 	const rand = 'pie_' + Math.floor(Math.random() * 100) + 1;
 	pies.push(rand);

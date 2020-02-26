@@ -22,7 +22,13 @@
             ${pie}
         </ul>
 
+        <div %for="ex of examples -> render(p)">
+            ${ex}
+        </div>
+
+
         <div %switch="some_var">
+
             <div %case="some_value">
                 <!-- this will be hidden -->
                 <p>this is a test0</p>
