@@ -253,8 +253,51 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 });
                             }
                         }
-
                     break;
+                    case 'json':
+
+                        let jsonMappedDefiners = [];
+
+                        const jsonData = elem.getAttribute(beginner + 'json');
+                        if (jsonData != null) {
+                            if (!GLOB_DATA[jsonData]) {
+                                
+                                const execJson = elem.textContent.trim();
+                                if (execJson.includes('${') && execJson.includes('}') && execJson.includes('*')) {
+                                    
+                                    let between = execJson.substring(execJson.indexOf('${') + 2, execJson.indexOf('}')).trim();
+                                    if (between != null) {
+
+                                        const perLine = between.split('\n');
+                                        elem.textContent = "";
+                                        for (let line of perLine) {
+
+                                            let key, val
+                                            line = line.trim();
+
+                                            if ((line.includes('let') || line.includes('var') || line.includes('const')) && line.includes('*.')) {
+                                                key = line.split('*.')[0].trim();
+                                                val = line.split('*.')[1].replace(';', '').trim();
+                                                key += " \"" + val + "\";";                                                
+                                            }
+
+                                           //line = line.replace(line, key);
+                                           
+                                           //console.log(key);
+
+                                        }
+                                    } else {    
+                                        elem.remove();
+                                    }
+                                } else {
+                                    elem.remove();
+                                }
+                            } else {
+                                elem.remove();
+                            }
+                        }
+                        
+                        break;
                 default:
                     break;
             }
