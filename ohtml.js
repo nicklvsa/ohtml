@@ -1,4 +1,33 @@
-let GLOB_DATA;
+let GLOB_DATA = [];
+
+if (!Object.prototype.watch) {
+    Object.defineProperty(Object.prototype, "watch", {
+        enumerable: false,
+        configurable: true,
+        writable: false,
+        value: function(prop, handler) {
+            var old = this[prop];
+            var cur = old;
+            var getter = function() {
+                return cur;
+            };
+            var setter = function(val) {
+                old = cur;
+                cur = handler.call(this, prop, old, val);
+                return cur;
+            };
+            // can't watch constants
+            if (delete this[prop]) {
+                Object.defineProperty(this, prop, {
+                    get: getter,
+                    set: setter,
+                    enumerable: true,
+                    configurable: true
+                });
+            }
+        }
+    });
+}
 
 const handleString = (input) => new Function('data', `
     return \`${input}\`
@@ -23,10 +52,7 @@ const out = (severity, input) => {
 
 var parseOHTML = (frag, data, useNodes = true) => {
 
-    //setup empty ref
-    let checker = {ref: new Object()};
     const beginner = '%';
-
     GLOB_DATA = data;
 
     if (useNodes) {
@@ -112,19 +138,6 @@ var parseOHTML = (frag, data, useNodes = true) => {
             elem.removeAttribute(beginner + binder);
         }
         return elem;
-    }
-
-    let startParseIf = (looper, statement, elem, callback) => {
-        looper.ref = setInterval(() => {
-            if (GLOB_DATA[statement]) {
-                const query = GLOB_DATA[statement];
-                callback(query, elem);
-            }
-        }, 200);
-    };
-
-    let stopParseIf = (parserLoop) => {
-        clearInterval(parserLoop.ref);
     };
 
   frag.querySelectorAll('*').forEach((elem) => {
@@ -164,29 +177,28 @@ var parseOHTML = (frag, data, useNodes = true) => {
             const customForModifier = '->';
             const attr = name.substring(1).trim();
 
-            //console.log(attr);
-
             if (attr.includes("bind:")) {
                 const response = bindToAttribute(elem, attr);
-                console.log(response);
+                //console.log(response); //check element response
             }
 
             switch (attr) {
                 case "if":
 
+                    //TODO: fix weird circular reference issue
+                    /*Object.keys(GLOB_DATA).forEach((key) => {
+                        if (key == elem.getAttribute(beginner + 'if')) {
+                            GLOB_DATA.watch(elem.getAttribute(beginner + 'if'), (id, old, curr) => {
+                                
+                            });
+                        }
+                    });*/
+
                     //TODO: add state updating
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
-                        stopParseIf(checker);
-                        elem.style = "display:none;";
-                        //elem.remove();
+                        elem.remove();
                     }
-
-                    startParseIf(checker, elem.getAttribute(beginner + 'if'), (query) => {
-                        elem.style = "display:;";
-                        //console.log(elemResponse);
-                    });
-
-                    
+ 
                 case "for":
 
                    const loop = elem.getAttribute(beginner + 'for');
