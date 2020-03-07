@@ -32,6 +32,7 @@ parseOHTML(document.body, {
 		pies.pop();
 	},
 	testing: "",
+	ex_placeholder: "some value",
 	somethingElse: true
 }, false);
 

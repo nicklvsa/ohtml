@@ -25,6 +25,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
     //setup empty ref
     let checker = {ref: new Object()};
+    const beginner = '%';
 
     GLOB_DATA = data;
 
@@ -101,6 +102,19 @@ var parseOHTML = (frag, data, useNodes = true) => {
         });
     };
 
+    let bindToAttribute = (elem, binder) => {
+        const boundTo = binder.split(':')[1];
+        const attr = elem.getAttribute(beginner + binder);
+        if (GLOB_DATA[attr]) {
+            elem.setAttribute(boundTo, GLOB_DATA[attr]);
+            elem.removeAttribute(beginner + binder);
+        } else {
+            elem.setAttribute(boundTo, "");
+            elem.removeAttribute(beginner + binder);
+        }
+        return elem;
+    }
+
     let startParseIf = (looper, statement, elem, callback) => {
         looper.ref = setInterval(() => {
             if (GLOB_DATA[statement]) {
@@ -148,9 +162,13 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
         } else if (name.startsWith('%')) { //keyword binding
 
-            const beginner = '%';
             const customForModifier = '->';
             const attr = name.substring(1).trim();
+
+            if (attr.includes("bind:")) {
+                const response = bindToAttribute(elem, attr);
+                console.log(response);
+            }
 
             switch (attr) {
                 case "if":

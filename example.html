@@ -22,15 +22,17 @@
             ${pie}
         </ul>
 
-        <input type="text" placeholder="bound to testing var" :testing>
+        <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
-        <button type="button" @click="getStateTesting">Get State Testing</button>
+        <strong>Testing shorthand binding: </strong> <input type="text" placeholder="bound to testing var" :testing /> <br/><br/>
 
-        <button type="button" @click="setStateTesting">Set State Testing</button>
+        <strong>Testing @click events: </strong> <button type="button" @click="getStateTesting">Get State Testing</button> <br/>
+
+        <strong>Testing @click events: </strong> <button type="button" @click="setStateTesting">Set State Testing</button>
 
         <br/><br/>
 
-        <button type="button" @click="addArray">Add Array State</button>
-        <button type="button" @click="popArray">Pop Array State</button>
+        <strong>Testing real time state updating: </strong> <button type="button" @click="addArray">Add Array State</button> <br/>
+        <strong>Testing real time state updating: </strong> <button type="button" @click="popArray">Pop Array State</button>
     </body>
 </html>
