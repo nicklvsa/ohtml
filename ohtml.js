@@ -165,6 +165,8 @@ var parseOHTML = (frag, data, useNodes = true) => {
             const customForModifier = '->';
             const attr = name.substring(1).trim();
 
+            //console.log(attr);
+
             if (attr.includes("bind:")) {
                 const response = bindToAttribute(elem, attr);
                 console.log(response);

@@ -11,6 +11,13 @@ const pies = [
 	'cherry'
 ];
 
+const examples = [
+	'example0',
+	'example1',
+	'example2',
+	'example3'
+];
+
 function generateRandomPie() {
 	const rand = 'pie_' + Math.floor(Math.random() * 100) + 1;
 	pies.push(rand);
@@ -18,19 +25,24 @@ function generateRandomPie() {
 
 //setup the parser
 parseOHTML(document.body, {
+
 	getStateTesting() {
 		alert(StateManager.getState('testing'));
 	},
+
 	setStateTesting() {
 		StateManager.setState('testing', 'abc');
 		alert(StateManager.getState('testing'));
 	},
+
 	addArray() {
 		generateRandomPie();
 	},
+
 	popArray() {
 		pies.pop();
 	},
+
 	testing: "",
 	ex_placeholder: "some value",
 	somethingElse: true
