@@ -1,34 +1,5 @@
 let GLOB_DATA = [];
 
-if (!Object.prototype.watch) {
-    Object.defineProperty(Object.prototype, "watch", {
-        enumerable: false,
-        configurable: true,
-        writable: false,
-        value: function(prop, handler) {
-            var old = this[prop];
-            var cur = old;
-            var getter = function() {
-                return cur;
-            };
-            var setter = function(val) {
-                old = cur;
-                cur = handler.call(this, prop, old, val);
-                return cur;
-            };
-            // can't watch constants
-            if (delete this[prop]) {
-                Object.defineProperty(this, prop, {
-                    get: getter,
-                    set: setter,
-                    enumerable: true,
-                    configurable: true
-                });
-            }
-        }
-    });
-}
-
 const handleString = (input) => new Function('data', `
     return \`${input}\`
 `);
@@ -184,19 +155,22 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
             switch (attr) {
                 case "if":
-
-                    //TODO: fix weird circular reference issue
-                    /*Object.keys(GLOB_DATA).forEach((key) => {
-                        if (key == elem.getAttribute(beginner + 'if')) {
-                            GLOB_DATA.watch(elem.getAttribute(beginner + 'if'), (id, old, curr) => {
-                                
-                            });
+                    const backupIf = [];
+                    setInterval(() => {
+                        for (const data of backupIf) {
+                            if (data.id == elem.getAttribute(beginner + 'if')) {
+                                if (GLOB_DATA[elem.getAttribute(beginner + 'if')] && GLOB_DATA[elem.getAttribute(beginner + 'if')] != '') {
+                                    elem.style = "display:;";
+                                } else {
+                                    elem.style = "display:none;";
+                                }
+                            }
                         }
-                    });*/
+                    }, 50);
 
-                    //TODO: add state updating
-                    if (!GLOB_DATA[elem.getAttribute(beginner + 'if')]) {
-                        elem.remove();
+                    if (!GLOB_DATA[elem.getAttribute(beginner + 'if')] || GLOB_DATA[elem.getAttribute(beginner + 'if')] == '') {
+                        backupIf.push({id: elem.getAttribute(beginner + 'if'), content: elem});
+                        elem.style = "display:none;";
                     }
  
                 case "for":
