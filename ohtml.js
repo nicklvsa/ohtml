@@ -109,7 +109,6 @@ var parseOHTML = (frag, data, useNodes = true) => {
             elem.setAttribute(boundTo, GLOB_DATA[attr]);
             elem.removeAttribute(beginner + binder);
         } else {
-            elem.setAttribute(boundTo, "");
             elem.removeAttribute(beginner + binder);
         }
         return elem;
@@ -203,27 +202,39 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
                             const modifier = loop.split('->')[1].trim();
 
-                            const iteratorTxtVar = parseDataHolder(elemData); 
+                            const rawIterator = parseDataHolder(elemData);
+                            const iteratorTxtVar = parseDataHolder(elemData).split('::')[0].trim(); 
                             const tag = parseAttrModifier(modifier);
 
                             let attrs = getElemAttrs(elem);
+
                             if (attrs[0] !== "ohtml") {
-                                backupDom += elem.innerHTML.replace('${'+iteratorTxtVar+'}', '');
+                                backupDom += elem.innerHTML.replace('${'+iteratorTxtVar+'}', '').replace('${'+rawIterator+'}', '');;
                                 elem.textContent = "";
                             }
 
                             for (let iter of eval(validArray)) {
-                                outputs.push(tag.replace('%s', iter));
+                                //console.log(iter + ' is of type: ' + typeof iter);
+                                if (typeof iter === 'object') {
+                                    if (rawIterator.includes('::')) {
+                                        const retriever = rawIterator.split('::')[1];
+                                        outputs.push(tag.replace('%s', iter[retriever]));
+                                    } else {
+                                        outputs.push(tag.replace('%s', iter));
+                                    }
+                                } else {
+                                    outputs.push(tag.replace('%s', iter));
+                                }
                             }
 
                             if (iteratorTxtVar == validIterator) {
-                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '');
+                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '').replace('${'+rawIterator+'}', '');
                                 elem.innerHTML += backupDom.replace('undefined', '').trim();
                                 for (let out of outputs) {
                                     elem.innerHTML += out;
                                 }
                             } else {
-                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '');
+                                elem.textContent = elem.textContent.replace('${'+iteratorTxtVar+'}', '').replace('${'+rawIterator+'}', '');
                                 out(2, 'Iterator did not match the replacer in for loop!');
                             } 
 

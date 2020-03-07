@@ -22,6 +22,11 @@
             ${pie}
         </ul>
 
+        <ul %for="ex of examples -> render(li)">
+            <!-- retrieve the name object of every example -->
+            ${ex::name}
+        </ul>
+
         <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
         <strong>Testing shorthand binding: </strong> <input type="text" placeholder="bound to testing var" :testing /> <br/><br/>
