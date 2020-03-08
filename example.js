@@ -14,7 +14,8 @@ const pies = [
 const examples = [
 	{name: 'example00', content: 'this is some content'},
 	{name: 'example01', content: 'this is some more content'},
-	{name: 'example02', content: 'hello world!'}
+	{name: 'example02', content: 'hello world!'},
+	{name: 'example03', content: 'bye, world!'}
 ];
 
 function generateRandomPie() {

@@ -45,16 +45,24 @@ var parseOHTML = (frag, data, useNodes = true) => {
 
     const modifierTypes = [
         'render',
+        'class',
+        'id',
         'set'
     ];
 
     const parseAttrModifier = (render) => {
         if (render != null) {
-            for (mod of modifierTypes) {
+            if (render.includes(';')) {
+                const attribs = render.split(';');
+                for (let attr of attribs) {
+                    // console.log(attr);
+                }
+            }
+
+            for (const mod of modifierTypes) {
                 if (render.includes(mod)) {
 
                     const args = [];
-
                     const modifierType = render.substring(0, render.indexOf('(')).trim();
                     const argString = render.substring(render.indexOf('(') + 1, render.indexOf(')')).trim();
     
@@ -195,10 +203,11 @@ var parseOHTML = (frag, data, useNodes = true) => {
                             const validIterator = loop.split('->')[0].split('of')[0].trim();
                             const validArray = loop.split('->')[0].split('of')[1].trim();
 
-                            const modifier = loop.split('->')[1].trim();
+                            const modifier = loop.split('->')[1];
 
                             const rawIterator = parseDataHolder(elemData);
                             const iteratorTxtVar = parseDataHolder(elemData).split('::')[0].trim(); 
+
                             const tag = parseAttrModifier(modifier);
 
                             let attrs = getElemAttrs(elem);
