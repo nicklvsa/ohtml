@@ -1,4 +1,6 @@
 let GLOB_DATA = [];
+let STATE_CLOCK = 100; // in milliseconds
+let UPDATE_STATE = true; // if false, forces all states to update once and then remain static
 
 const handleString = (input) => new Function('data', `
     return \`${input}\`
@@ -46,7 +48,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
         'set'
     ];
 
-    let parseAttrModifier = (render) => {
+    const parseAttrModifier = (render) => {
         if (render != null) {
             for (mod of modifierTypes) {
                 if (render.includes(mod)) {
@@ -82,7 +84,15 @@ var parseOHTML = (frag, data, useNodes = true) => {
         }
     };
 
-    let parseDataHolder = (html) => {
+    const buildState = (callback) => {
+        const timer = setInterval(callback, STATE_CLOCK);
+        if (!UPDATE_STATE) {
+            callback();
+            clearInterval(timer);
+        }
+    };
+
+    const parseDataHolder = (html) => {
         if (html != null) {
             if (html.includes('$') && html.includes('{') && html.includes('}')) {
                 return html.substring(html.indexOf('${') + 2, html.indexOf('}'));
@@ -99,15 +109,17 @@ var parseOHTML = (frag, data, useNodes = true) => {
         });
     };
 
-    let bindToAttribute = (elem, binder) => {
+    const bindToAttribute = (elem, binder) => {
         const boundTo = binder.split(':')[1];
         const attr = elem.getAttribute(beginner + binder);
-        if (GLOB_DATA[attr]) {
-            elem.setAttribute(boundTo, GLOB_DATA[attr]);
-            elem.removeAttribute(beginner + binder);
-        } else {
-            elem.removeAttribute(beginner + binder);
-        }
+        buildState(() => {
+            if (GLOB_DATA[attr]) {
+                elem.setAttribute(boundTo, GLOB_DATA[attr]);
+                elem.removeAttribute(beginner + binder);
+            } else {
+                elem.removeAttribute(beginner + binder);
+            }
+        });
         return elem;
     };
 
@@ -148,15 +160,12 @@ var parseOHTML = (frag, data, useNodes = true) => {
             const customForModifier = '->';
             const attr = name.substring(1).trim();
 
-            if (attr.includes("bind:")) {
-                const response = bindToAttribute(elem, attr);
-                //console.log(response); //check element response
-            }
+            if (attr.includes("bind:")) bindToAttribute(elem, attr);
 
             switch (attr) {
                 case "if":
                     const backupIf = [];
-                    setInterval(() => {
+                    buildState(() => {
                         for (const data of backupIf) {
                             if (data.id == elem.getAttribute(beginner + 'if')) {
                                 if (GLOB_DATA[elem.getAttribute(beginner + 'if')] && GLOB_DATA[elem.getAttribute(beginner + 'if')] != '') {
@@ -166,7 +175,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 }
                             }
                         }
-                    }, 50);
+                    });
 
                     if (!GLOB_DATA[elem.getAttribute(beginner + 'if')] || GLOB_DATA[elem.getAttribute(beginner + 'if')] == '') {
                         backupIf.push({id: elem.getAttribute(beginner + 'if'), content: elem});

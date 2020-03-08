@@ -44,6 +44,8 @@ parseOHTML(document.body, {
 
 	testing: "",
 	ex_placeholder: "some value",
+	get_height: "50",
+	get_width: "150",
 	somethingElse: true
 }, false);
 

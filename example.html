@@ -29,6 +29,8 @@
 
         <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
+        <strong>Testing attribute binding: </strong> <canvas %bind:width="get_width" %bind:height="get_height" style="background-color:green;"></canvas> <br/><br/>
+
         <strong>Testing shorthand binding: </strong> <input type="text" placeholder="bound to testing var" :testing /> <br/><br/>
 
         <strong>Testing @click events: </strong> <button type="button" @click="getStateTesting">Get State Testing</button> <br/>
