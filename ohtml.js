@@ -179,7 +179,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 if (GLOB_DATA[elem.getAttribute(beginner + 'if')] && GLOB_DATA[elem.getAttribute(beginner + 'if')] != '') {
                                     elem.style = "display:;";
                                 } else {
-                                    elem.style = "display:none;";
+                                    elem.style = "display:none;";                                 
                                 }
                             }
                         }
@@ -189,7 +189,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                         backupIf.push({id: elem.getAttribute(beginner + 'if'), content: elem});
                         elem.style = "display:none;";
                     }
- 
+                
                 case "for":
 
                    const loop = elem.getAttribute(beginner + 'for');
@@ -217,12 +217,16 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 elem.textContent = "";
                             }
 
-                            for (let iter of eval(validArray)) {
+                            for (const iter of eval(validArray)) {
                                 //console.log(iter + ' is of type: ' + typeof iter);
                                 if (typeof iter === 'object') {
                                     if (rawIterator.includes('::')) {
-                                        const retriever = rawIterator.split('::')[1];
-                                        outputs.push(tag.replace('%s', iter[retriever]));
+                                        const retriever = rawIterator.split('::');
+                                        for (const ret of retriever) {
+                                            if (ret in iter) {
+                                                outputs.push(tag.replace('%s', iter[ret]));
+                                            }
+                                        }
                                     } else {
                                         outputs.push(tag.replace('%s', iter));
                                     }
