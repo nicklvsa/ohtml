@@ -24,16 +24,18 @@
 
         <ul %for="ex of examples -> render(li)">
             <!-- retrieve the name object of every example (currently, this can only work with single dimensional arrays) -->
+            <!-- equivalent: examples['name'] -->
             ${ex::name}
         </ul>
 
         <ul %for="list of lists -> render(li)">
-            ${list::info::poo}
+            <!-- equivalent: lists['info']['testing'] -->
+            ${list::info::testing}
         </ul>
 
         <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
-        <strong>Testing attribute binding: </strong> <canvas %bind:width="get_width" %bind:height="get_height" style="background-color:green;"></canvas> <br/><br/>
+        <strong>Testing attribute binding: </strong> <canvas height="50" width="150" style="background-color:green;"></canvas> <br/><br/>
 
         <strong>Testing shorthand binding: </strong> <input type="text" placeholder="bound to testing var" :testing /> <br/><br/>
 

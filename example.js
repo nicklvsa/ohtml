@@ -22,7 +22,7 @@ const lists = [
 	{id: '00', info: 'some info'},
 	{id: '01', info: 'some more info'},
 	{id: '02', info: {
-		poo: 'hi', pee: {
+		testing: 'hi', more: {
 			another: 'hello'
 		}
 	}}
@@ -55,8 +55,7 @@ parseOHTML(document.body, {
 
 	testing: "",
 	ex_placeholder: "some value",
-	get_height: "50",
-	get_width: "150",
 	somethingElse: true
+
 }, false);
 

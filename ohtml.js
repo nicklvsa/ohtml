@@ -189,7 +189,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                         backupIf.push({id: elem.getAttribute(beginner + 'if'), content: elem});
                         elem.style = "display:none;";
                     }
-                
+
                 case "for":
 
                    const loop = elem.getAttribute(beginner + 'for');
