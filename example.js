@@ -18,6 +18,16 @@ const examples = [
 	{name: 'example03', content: 'bye, world!'}
 ];
 
+const lists = [
+	{id: '00', info: 'some info'},
+	{id: '01', info: 'some more info'},
+	{id: '02', info: {
+		poo: 'hi', pee: {
+			another: 'hello'
+		}
+	}}
+];
+
 function generateRandomPie() {
 	const rand = 'pie_' + Math.floor(Math.random() * 100) + 1;
 	pies.push(rand);

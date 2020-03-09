@@ -27,6 +27,10 @@
             ${ex::name}
         </ul>
 
+        <ul %for="list of lists -> render(li)">
+            ${list::info::poo}
+        </ul>
+
         <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
         <strong>Testing attribute binding: </strong> <canvas %bind:width="get_width" %bind:height="get_height" style="background-color:green;"></canvas> <br/><br/>

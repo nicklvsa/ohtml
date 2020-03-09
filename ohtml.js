@@ -217,14 +217,25 @@ var parseOHTML = (frag, data, useNodes = true) => {
                                 elem.textContent = "";
                             }
 
+
+                            // TODO: fix this mess to allow for smooth traversal through an array
                             for (const iter of eval(validArray)) {
                                 //console.log(iter + ' is of type: ' + typeof iter);
                                 if (typeof iter === 'object') {
                                     if (rawIterator.includes('::')) {
                                         const retriever = rawIterator.split('::');
                                         for (const ret of retriever) {
-                                            if (ret in iter) {
-                                                outputs.push(tag.replace('%s', iter[ret]));
+                                            if (typeof iter[ret] === 'object') {
+                                                for (const agRet of retriever) {
+                                                    if (agRet in iter[ret]) {
+                                                        //console.log(iter[ret][agRet]);
+                                                        outputs.push(tag.replace('%s', iter[ret][agRet]));
+                                                    }
+                                                }
+                                            } else {
+                                                if (ret in iter) {
+                                                    outputs.push(tag.replace('%s', iter[ret]));
+                                                }
                                             }
                                         }
                                     } else {
