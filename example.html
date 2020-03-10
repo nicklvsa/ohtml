@@ -1,17 +1,20 @@
 <html>
     <head>
 
+        <title>Test</title>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="./ohtml.js"></script>
         <script defer src="./example.js"></script>
 
-        <title>Test</title>
-        
     </head>
         
     <body>
         
-        <h3 %if="testing">Hello, World</h3>
+        <div %if="testing">
+            <h3>Hello, World</h3>
+            <h3 %else>cool</h3> <!-- fix else statements -->
+        </div>
 
         <!-- currently only push and pop are working for live data state updates -->
         <ul %for="entry of entries -> render(li)">
@@ -35,7 +38,7 @@
 
         <strong>Testing attribute binding: </strong> <input type="text" %bind:placeholder="ex_placeholder" /> <br/><br/>
 
-        <strong>Testing attribute binding: </strong> <canvas height="50" width="150" style="background-color:green;"></canvas> <br/><br/>
+        <strong>Testing attribute binding: </strong> <canvas %bind:height="get_height" width="150" style="background-color:green;"></canvas> <br/><br/>
 
         <strong>Testing shorthand binding: </strong> <input type="text" placeholder="bound to testing var" :testing /> <br/><br/>
 

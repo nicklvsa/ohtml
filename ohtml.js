@@ -190,8 +190,21 @@ var parseOHTML = (frag, data, useNodes = true) => {
                         elem.style = "display:none;";
                     }
 
-                case "for":
+                case "else":
+                    if (elem.parentElement.hasAttribute(beginner + 'if')) {
+                        // console.log(elem.parentElement);
+                        elem.parentElement.childNodes.forEach((child) => {
+                            if (child instanceof Element) {
+                                if (child.hasAttribute(beginner + 'else')) {
+                                    child.style = "display:none;";
+                                } else {
+                                    child.style = "display:;";
+                                }
+                            }
+                        });
+                    }
 
+                case "for":
                    const loop = elem.getAttribute(beginner + 'for');
                    if (loop != null) {
                         if (loop.includes(customForModifier)) {

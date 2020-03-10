@@ -54,7 +54,8 @@ parseOHTML(document.body, {
 	},
 
 	testing: "",
-	ex_placeholder: "some value",
+	get_height: "150",
+	ex_placeholder: "some placeholder example",
 	somethingElse: true
 
 }, false);
