@@ -193,6 +193,7 @@ var parseOHTML = (frag, data, useNodes = true) => {
                 case "else":
                     if (elem.parentElement.hasAttribute(beginner + 'if')) {
                         // console.log(elem.parentElement);
+                        // TODO: fix parent element hiding the else object from showing
                         elem.parentElement.childNodes.forEach((child) => {
                             if (child instanceof Element) {
                                 if (child.hasAttribute(beginner + 'else')) {
